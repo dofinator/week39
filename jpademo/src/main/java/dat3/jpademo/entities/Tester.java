@@ -1,9 +1,12 @@
 package dat3.jpademo.entities;
 
+
+import dto.PersonStyleDTO;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 public class Tester {
@@ -63,5 +66,23 @@ public class Tester {
             System.out.println(f.getPerson().getName() + " " + f.getAmount() + " " + "By: " + f.getPerson().getAdress().getCity());
         }
 
+        TypedQuery<Person> q2 = em.createQuery("SELECT p FROM Person p", Person.class);
+        List<Person> persons = q2.getResultList();
+
+        for (Person p : persons) {
+            System.out.println("Navn: " + p.getName());
+            for (Fee f : p.getFees()) {
+                System.out.println("-- beløb " + f.getAmount() + ", " + f.getPayDate().toString());
+            }
+        }
+
+        System.out.println("****** JPQL Joins ******");
+        Query q3 = em.createQuery("SELECT new dto.PersonStyleDTO(p.name, p.year, s.styleName) FROM Person p JOIN p.styles s");
+        
+        List<PersonStyleDTO> personDetails = q3.getResultList();
+        
+        for(PersonStyleDTO ps: personDetails){
+            System.out.println("Navn: " + ps.getName() + ", " + ps.getYear() + ", " + ps.getSwimStyle());
+        }
     }
 }
